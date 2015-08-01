@@ -1,0 +1,8 @@
+# MySQL Server
+[mysqld]
+ssl-ca = /etc/mysql/ssl/ca.crt
+ssl-key = /etc/mysql/ssl/server.key
+ssl-cert = /etc/mysql/ssl/server.crt
+
+wsrep_provider_options="socket.ssl_ca=/etc/mysql/ssl/ca.crt;socket.ssl_cert=/etc/mysql/ssl/server.crt;socket.ssl_key=/etc/mysql/ssl/server.key"
+

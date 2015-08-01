@@ -1,0 +1,33 @@
+#!/bin/bash
+
+set -ueo pipefail
+
+CN=${CN:-$(hostname -f)}
+
+if [ ! -e "/etc/mysql/ssl/ca.crt" ]; then
+	openssl req \
+	-newkey rsa:2048 \
+	-days 365000 \
+	-nodes \
+	-keyout /etc/mysql/ssl/server.key \
+	-out /etc/mysql/ssl/server.csr \
+	-subj "/CN=${CN}"
+
+	openssl rsa \
+	-in /etc/mysql/ssl/server.key \
+	-out /etc/mysql/ssl/server.crt
+
+	openssl x509 \
+	-req \
+	-in /etc/mysql/ssl/server.csr \
+	-days 365000 \
+	-CA /etc/ssl/ca.crt \
+	-CAkey /etc/ssl/ca.key \
+	-set_serial 01 \
+	-out /etc/mysql/ssl/server.crt \
+	-passin pass:"${CAPASS}"
+
+	cp /etc/ssl/ca.crt /etc/mysql/ssl/ca.crt
+	cp /etc/ssl/ssl.cnf /etc/mysql/ssl.d/
+fi
+exec tail -f /dev/null
